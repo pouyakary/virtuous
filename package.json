@@ -1,5 +1,5 @@
 {
-  "name": "virtuous",
+  "name": "virtuous-core",
   "version": "1.0.0",
   "description": "Virtuous the JSON Formatter for the Kary Coding Standards",
   "main": "out/virtuous.js",
