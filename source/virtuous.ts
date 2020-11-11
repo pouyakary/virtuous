@@ -1,238 +1,236 @@
 
-namespace Virtuous {
 
-    //
-    // ─── TYPES ──────────────────────────────────────────────────────────────────────
-    //
 
-        export interface Result {
-            success:    boolean
-            value:      string
-        }
+//
+// ─── TYPES ──────────────────────────────────────────────────────────────────────
+//
 
-        enum JSONTreeTypes {
-            Array, Dictionary, Literal
-        }
+    export interface Result {
+        success:    boolean
+        value:      string
+    }
 
-        type JSONValue =
-            JSONArray | JSONDictionary | JSONLiteral
+    enum JSONTreeTypes {
+        Array, Dictionary, Literal
+    }
 
-        type JSONLiteral =
-            string | number | boolean | null
+    type JSONValue =
+        JSONArray | JSONDictionary | JSONLiteral
 
-        type JSONArray =
-            Array<JSONValue>
+    type JSONLiteral =
+        string | number | boolean | null
 
-        interface JSONDictionary {
-            [ key: string ]:    JSONValue
-        }
+    type JSONArray =
+        Array<JSONValue>
 
-    //
-    // ─── FORMAT ─────────────────────────────────────────────────────────────────────
-    //
+    interface JSONDictionary {
+        [ key: string ]:    JSONValue
+    }
 
-        /**
-         * This is the main function for the Virtuous that formats
-         * the JSON string passed to it based on the Kary Coding Standards
-         * @param code A JSON string to be formatted
-         */
-        export function format ( code: string ): Result {
-            try {
-                const jsonObject =
-                    JSON.parse( code ) as JSONValue
-                const formattedCode =
-                    formatJSONNode( jsonObject )
+//
+// ─── FORMAT ─────────────────────────────────────────────────────────────────────
+//
 
-                return {
-                    success:    true,
-                    value:      formattedCode,
-                }
-
-            } catch {
-                return {
-                    success:    false,
-                    value:      "Could not parse the JSON code.",
-                }
-            }
-        }
-
-    //
-    // ─── FORMAT ─────────────────────────────────────────────────────────────────────
-    //
-
-        function formatJSONNode ( input: JSONValue ): string {
-            switch ( determineJSONType( input ) ) {
-                case JSONTreeTypes.Array:
-                    return formatJSONArray( input as JSONArray )
-                case JSONTreeTypes.Dictionary:
-                    return formatJSONDictionary( input as JSONDictionary )
-                case JSONTreeTypes.Literal:
-                    return formatJSONLiteral( input as JSONLiteral )
-            }
-        }
-
-    //
-    // ─── FORMAT LITERAL ─────────────────────────────────────────────────────────────
-    //
-
-        function formatJSONLiteral ( value: JSONLiteral ): string {
-            return JSON.stringify( value )
-        }
-
-    //
-    // ─── FORMAT ARRAY ───────────────────────────────────────────────────────────────
-    //
-
-        function formatJSONArray ( input: JSONArray ): string {
-            const serializedArray =
-                input.map( formatJSONNode )
-            const formattedBody =
-                formatArrayAndDictionaryBodies( true, serializedArray )
-            return formattedBody
-        }
-
-    //
-    // ─── FORMAT OBJECT ──────────────────────────────────────────────────────────────
-    //
-
-        function formatJSONDictionary ( input: JSONDictionary ): string {
-            const { terminals, productions } =
-                separateDictionaryProductionAndTerminalKeys( input )
-            const terminalRows =
-                formatDictionaryTerminalRows( input, terminals )
-            const productionRows =
-                formatDictionaryProductionRows( input, productions )
-            const fullDictionaryBody =
-                formatArrayAndDictionaryBodies( false,
-                    [ ...terminalRows, ...productionRows ]
-                )
-            return fullDictionaryBody
-        }
-
-    //
-    // ─── SEPARATE DICTIONARY KEYS ───────────────────────────────────────────────────
-    //
-
-        function separateDictionaryProductionAndTerminalKeys ( input: JSONDictionary ) {
-            const keys =
-                Object.keys( input )
-            const terminals =
-                new Array<string> ( )
-            const productions =
-                new Array<string> ( )
-
-            for ( const key of keys ) {
-                switch ( determineJSONType( input[ key ] ) ) {
-                    case JSONTreeTypes.Array:
-                    case JSONTreeTypes.Dictionary:
-                        productions.push( key )
-                        break
-                    case JSONTreeTypes.Literal:
-                        terminals.push( key )
-                        break
-                }
-            }
+    /**
+     * This is the main function for the Virtuous that formats
+     * the JSON string passed to it based on the Kary Coding Standards
+     * @param code A JSON string to be formatted
+     */
+    export function format ( code: string ): Result {
+        try {
+            const jsonObject =
+                JSON.parse( code ) as JSONValue
+            const formattedCode =
+                formatJSONNode( jsonObject )
 
             return {
-                terminals, productions
+                success:    true,
+                value:      formattedCode,
+            }
+
+        } catch {
+            return {
+                success:    false,
+                value:      "Could not parse the JSON code.",
+            }
+        }
+    }
+
+//
+// ─── FORMAT ─────────────────────────────────────────────────────────────────────
+//
+
+    function formatJSONNode ( input: JSONValue ): string {
+        switch ( determineJSONType( input ) ) {
+            case JSONTreeTypes.Array:
+                return formatJSONArray( input as JSONArray )
+            case JSONTreeTypes.Dictionary:
+                return formatJSONDictionary( input as JSONDictionary )
+            case JSONTreeTypes.Literal:
+                return formatJSONLiteral( input as JSONLiteral )
+        }
+    }
+
+//
+// ─── FORMAT LITERAL ─────────────────────────────────────────────────────────────
+//
+
+    function formatJSONLiteral ( value: JSONLiteral ): string {
+        return JSON.stringify( value )
+    }
+
+//
+// ─── FORMAT ARRAY ───────────────────────────────────────────────────────────────
+//
+
+    function formatJSONArray ( input: JSONArray ): string {
+        const serializedArray =
+            input.map( formatJSONNode )
+        const formattedBody =
+            formatArrayAndDictionaryBodies( true, serializedArray )
+        return formattedBody
+    }
+
+//
+// ─── FORMAT OBJECT ──────────────────────────────────────────────────────────────
+//
+
+    function formatJSONDictionary ( input: JSONDictionary ): string {
+        const { terminals, productions } =
+            separateDictionaryProductionAndTerminalKeys( input )
+        const terminalRows =
+            formatDictionaryTerminalRows( input, terminals )
+        const productionRows =
+            formatDictionaryProductionRows( input, productions )
+        const fullDictionaryBody =
+            formatArrayAndDictionaryBodies( false,
+                [ ...terminalRows, ...productionRows ]
+            )
+        return fullDictionaryBody
+    }
+
+//
+// ─── SEPARATE DICTIONARY KEYS ───────────────────────────────────────────────────
+//
+
+    function separateDictionaryProductionAndTerminalKeys ( input: JSONDictionary ) {
+        const keys =
+            Object.keys( input )
+        const terminals =
+            new Array<string> ( )
+        const productions =
+            new Array<string> ( )
+
+        for ( const key of keys ) {
+            switch ( determineJSONType( input[ key ] ) ) {
+                case JSONTreeTypes.Array:
+                case JSONTreeTypes.Dictionary:
+                    productions.push( key )
+                    break
+                case JSONTreeTypes.Literal:
+                    terminals.push( key )
+                    break
             }
         }
 
-    //
-    // ─── FORMAT DICTIONARY TERMINAL ROWS ────────────────────────────────────────────
-    //
+        return {
+            terminals, productions
+        }
+    }
 
-        function formatDictionaryTerminalRows ( input: JSONDictionary, keys: string[ ] ): string[ ] {
-            const maximumKeyLength =
-                Math.max( ...keys.map( x => x.length + 3 ) )
-            const separationLength =
-                4 * ( Math.floor( maximumKeyLength / 4 ) + 1 )
-            const results =
-                new Array<string> ( )
-            const sortedKeys =
-                keys.sort( )
+//
+// ─── FORMAT DICTIONARY TERMINAL ROWS ────────────────────────────────────────────
+//
 
-            for ( const key of sortedKeys ) {
-                const formattedKey =
-                    formatKey( key )
-                const formattedSpace =
-                    " ".repeat( separationLength -  key.length )
-                const formattedValue =
-                    formatJSONNode( input[ key ] )
-                const formattedRow =
-                    formattedKey + formattedSpace + formattedValue
-                results.push( formattedRow )
-            }
+    function formatDictionaryTerminalRows ( input: JSONDictionary, keys: string[ ] ): string[ ] {
+        const maximumKeyLength =
+            Math.max( ...keys.map( x => x.length + 3 ) )
+        const separationLength =
+            4 * ( Math.floor( maximumKeyLength / 4 ) + 1 )
+        const results =
+            new Array<string> ( )
+        const sortedKeys =
+            keys.sort( )
 
-            return results
+        for ( const key of sortedKeys ) {
+            const formattedKey =
+                formatKey( key )
+            const formattedSpace =
+                " ".repeat( separationLength -  key.length )
+            const formattedValue =
+                formatJSONNode( input[ key ] )
+            const formattedRow =
+                formattedKey + formattedSpace + formattedValue
+            results.push( formattedRow )
         }
 
-    //
-    // ─── FORMAT DICTIONARY PRODUCTION ROWS ──────────────────────────────────────────
-    //
+        return results
+    }
 
-        function formatDictionaryProductionRows ( input: JSONDictionary, keys: string[ ] ): string[ ] {
-            const results =
-                new Array<string> ( )
+//
+// ─── FORMAT DICTIONARY PRODUCTION ROWS ──────────────────────────────────────────
+//
 
-            for ( const key of keys ) {
-                const formattedKey =
-                    formatKey( key )
-                const formattedValue =
-                    formatJSONNode( input[ key ] )
-                const formattedBody =
-                    formattedKey + " " + formattedValue
-                results.push( formattedBody )
-            }
+    function formatDictionaryProductionRows ( input: JSONDictionary, keys: string[ ] ): string[ ] {
+        const results =
+            new Array<string> ( )
 
-            return results
+        for ( const key of keys ) {
+            const formattedKey =
+                formatKey( key )
+            const formattedValue =
+                formatJSONNode( input[ key ] )
+            const formattedBody =
+                formattedKey + " " + formattedValue
+            results.push( formattedBody )
         }
 
-    //
-    // ─── FORMAT KEY ─────────────────────────────────────────────────────────────────
-    //
+        return results
+    }
 
-        function formatKey ( key: string ) {
-            return JSON.stringify( key ) + ":"
+//
+// ─── FORMAT KEY ─────────────────────────────────────────────────────────────────
+//
+
+    function formatKey ( key: string ) {
+        return JSON.stringify( key ) + ":"
+    }
+
+//
+// ─── GET TYPE ───────────────────────────────────────────────────────────────────
+//
+
+    function determineJSONType ( input: JSONValue ): JSONTreeTypes {
+        if ( input instanceof Array ) {
+            return JSONTreeTypes.Array
         }
 
-    //
-    // ─── GET TYPE ───────────────────────────────────────────────────────────────────
-    //
-
-        function determineJSONType ( input: JSONValue ): JSONTreeTypes {
-            if ( input instanceof Array ) {
-                return JSONTreeTypes.Array
-            }
-
-            if ( typeof input === "object" ) {
-                return JSONTreeTypes.Dictionary
-            }
-
-            return JSONTreeTypes.Literal
+        if ( typeof input === "object" ) {
+            return JSONTreeTypes.Dictionary
         }
 
-    //
-    // ─── FORMAT ARRAY AND DICTIONARY BODIES ─────────────────────────────────────────
-    //
+        return JSONTreeTypes.Literal
+    }
 
-        function formatArrayAndDictionaryBodies ( isArray: boolean, rows: string[ ] ) {
-            const leftEnclosure =
-                isArray ? "[" : "{"
-            const rightEnclosure =
-                isArray ? "]": "}"
+//
+// ─── FORMAT ARRAY AND DICTIONARY BODIES ─────────────────────────────────────────
+//
 
-            const joinedRows =
-                rows.join( ",\n" )
-            const indentedRows =
-                joinedRows.split( "\n" ).map( line => "   " + line ).join( "\n" )
+    function formatArrayAndDictionaryBodies ( isArray: boolean, rows: string[ ] ) {
+        const leftEnclosure =
+            isArray ? "[" : "{"
+        const rightEnclosure =
+            isArray ? "]": "}"
 
-            const body =
-                leftEnclosure + "\n" + indentedRows + "\n" + rightEnclosure
+        const joinedRows =
+            rows.join( ",\n" )
+        const indentedRows =
+            joinedRows.split( "\n" ).map( line => "    " + line ).join( "\n" )
 
-            return body
-        }
+        const body =
+            leftEnclosure + "\n" + indentedRows + "\n" + rightEnclosure
 
-    // ────────────────────────────────────────────────────────────────────────────────
+        return body
+    }
 
-}
+// ────────────────────────────────────────────────────────────────────────────────
