@@ -1,0 +1,4 @@
+source/**
+.gitignore
+test.js
+tsconfig.json

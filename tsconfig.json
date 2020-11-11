@@ -5,7 +5,8 @@
         "strictNullChecks": true,
         "module": "commonjs",
         "removeComments": true,
-        "outDir": "out"
+        "outDir": "out",
+        "declaration": true,
     },
     "include": [
         "source/virtuous.ts"

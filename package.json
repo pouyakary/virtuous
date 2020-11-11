@@ -1,0 +1,11 @@
+{
+  "name": "virtuous",
+  "version": "1.0.0",
+  "description": "Virtuous the JSON Formatter for the Kary Coding Standards",
+  "main": "out/virtuous.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pouya Kary",
+  "license": "ISC"
+}
