@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES2015",
+        "strict": true,
+        "strictNullChecks": true,
+        "module": "commonjs",
+        "removeComments": true,
+        "outDir": "out"
+    },
+    "include": [
+        "source/virtuous.ts"
+    ]
+}
