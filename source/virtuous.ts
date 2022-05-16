@@ -1,5 +1,9 @@
 
+//
+// ─── IMPORTS ────────────────────────────────────────────────────────────────────
+//
 
+    import * as VisualStudioCodeJSON from "./vscode-json"
 
 //
 // ─── TYPES ──────────────────────────────────────────────────────────────────────
@@ -38,8 +42,13 @@
      */
     export function format ( code: string ): Result {
         try {
-            const jsonObject =
-                JSON.parse( code ) as JSONValue
+            const jsonObject: JSONValue =
+                VisualStudioCodeJSON.parse( code, [ ], {
+                    disallowComments:   false,
+                    allowEmptyContent:  false,
+                    allowTrailingComma: true,
+                })
+
             const formattedCode =
                 formatJSONNode( jsonObject )
 

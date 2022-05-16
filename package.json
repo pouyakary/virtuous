@@ -9,6 +9,7 @@
   "author": "Pouya Kary",
   "license": "ISC",
   "dependencies": {
-    "comment-json": "^4.2.2"
+    "comment-json": "^4.2.2",
+    "typescript": "^4.6.4"
   }
 }
