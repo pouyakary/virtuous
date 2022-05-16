@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Pouya Kary",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "comment-json": "^4.2.2"
+  }
 }
